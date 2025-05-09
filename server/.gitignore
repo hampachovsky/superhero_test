@@ -24,4 +24,4 @@ Thumbs.db
 *.swp
 
 # Uploads
-src/uploads/
+# src/uploads/
