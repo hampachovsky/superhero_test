@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
-import fs from 'fs';
 import { Superhero } from '../models/Superhero';
+import { clearFiles } from '../utils/clearFiles';
 import { removeFiles } from '../utils/removeFiles';
 
 const superheroController = {
@@ -53,28 +53,42 @@ const superheroController = {
 
             const { nickname, real_name, origin_description, superpowers, catch_phrase } = req.body;
 
+            const existingImages = req.body.existingImages
+                ? Array.isArray(req.body.existingImages)
+                    ? req.body.existingImages
+                    : [req.body.existingImages]
+                : [];
+
             if (nickname) hero.nickname = nickname;
             if (real_name) hero.real_name = real_name;
             if (origin_description) hero.origin_description = origin_description;
-            if (superpowers) hero.superpowers = superpowers;
-            if (catch_phrase) hero.catch_phrase = catch_phrase;
+            if (superpowers) {
+                if (typeof superpowers === 'string') {
+                    hero.superpowers = superpowers.split(',').map((power: string) => power.trim());
+                } else {
+                    hero.superpowers = superpowers;
+                }
+            }
+            const oldImagesToDelete = hero.Images.filter((img) => !existingImages.includes(img));
+            clearFiles(oldImagesToDelete);
 
-            if (req.files) {
-                hero.Images.forEach((image) => {
-                    const imagePath = image.split('/').pop();
-                    fs.unlinkSync(`src/${image}`);
-                });
+            if (catch_phrase) hero.catch_phrase = catch_phrase;
+            if (Array.isArray(req.files) && req.files.length > 0) {
+                // clearFiles(hero.Images);
                 const newImages = (req.files as Express.Multer.File[]).map(
                     (file) => `/uploads/${file.filename}`,
                 );
-                hero.Images = newImages;
+                hero.Images = [...existingImages, ...newImages];
             }
             const updatedHero = await hero.save();
-            res.status(202).json(updatedHero);
+            res.status(202).json({ updatedHero, existingImages });
         } catch (err) {
             if (req.files) removeFiles(req.files as Express.Multer.File[]);
             res.status(500).json({ message: 'Error updating superhero', error: err });
         }
+    },
+    async deleteSuperhero(req: Request, res: Response) {
+        // clearFiles(hero.Images);
     },
 };
 
