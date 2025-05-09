@@ -5,6 +5,47 @@ import { clearFiles } from '../utils/clearFiles';
 import { removeFiles } from '../utils/removeFiles';
 
 const superheroController = {
+    async getAll(req: Request, res: Response) {
+        try {
+            const page = parseInt(req.query.page as string) || 1;
+            const limit = 5;
+            const skip = (page - 1) * limit;
+            const totalItems = await Superhero.countDocuments();
+            const totalPages = Math.ceil(totalItems / limit);
+
+            const superheroes = await Superhero.find()
+                .select('nickname Images')
+                .skip(skip)
+                .limit(limit);
+            res.status(200).json({
+                data: superheroes,
+                page,
+                totalPages,
+                totalItems,
+            });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ error: 'Failed to fetch superheroes' });
+        }
+    },
+    async getById(req: Request, res: Response) {
+        try {
+            const superheroId = req.params.id;
+            if (!superheroId) {
+                res.status(400).json({ error: 'Superhero id not provided' });
+                return;
+            }
+            const superhero = await Superhero.findById(superheroId);
+            if (!superhero) {
+                res.status(404).json({ error: 'Superhero not found' });
+                return;
+            }
+            res.status(200).json(superhero);
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ error: 'Failed to fetch superhero' });
+        }
+    },
     async create(req: Request, res: Response) {
         try {
             const { nickname, real_name, origin_description, superpowers, catch_phrase } = req.body;
@@ -43,7 +84,7 @@ const superheroController = {
             res.status(400).json({ error: 'Failed create superhero' });
         }
     },
-    async updateSuperhero(req: Request, res: Response) {
+    async update(req: Request, res: Response) {
         try {
             const hero = await Superhero.findById(req.params.id);
             if (!hero) {
@@ -73,8 +114,7 @@ const superheroController = {
             clearFiles(oldImagesToDelete);
 
             if (catch_phrase) hero.catch_phrase = catch_phrase;
-            if (Array.isArray(req.files) && req.files.length > 0) {
-                // clearFiles(hero.Images);
+            if (req.files) {
                 const newImages = (req.files as Express.Multer.File[]).map(
                     (file) => `/uploads/${file.filename}`,
                 );
@@ -87,8 +127,24 @@ const superheroController = {
             res.status(500).json({ message: 'Error updating superhero', error: err });
         }
     },
-    async deleteSuperhero(req: Request, res: Response) {
-        // clearFiles(hero.Images);
+    async delete(req: Request, res: Response) {
+        try {
+            const superheroId = req.params.id;
+            if (!superheroId) res.status(400).json({ error: 'Superhero id not provided' });
+            const hero = await Superhero.findById(superheroId);
+            if (!hero) {
+                res.status(404).json({ error: 'Superhero not found' });
+                return;
+            }
+            if (hero.Images.length > 0) {
+                clearFiles(hero.Images);
+            }
+            await Superhero.deleteMany({ _id: superheroId });
+            res.status(200).json(null);
+        } catch (error) {
+            console.log(error);
+            res.status(400).json({ error: 'failed delete superhero' });
+        }
     },
 };
 
