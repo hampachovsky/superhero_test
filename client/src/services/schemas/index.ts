@@ -1,1 +1,1 @@
-export { createSuperheroSchema } from './createSuperheroSchema'
+export { createSuperheroSchema } from './createSuperheroSchema';

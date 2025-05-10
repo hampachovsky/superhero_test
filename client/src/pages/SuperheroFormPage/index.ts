@@ -1,1 +1,1 @@
-export { SuperheroFormPage } from './SuperheroFormPage'
+export { SuperheroFormPage } from './SuperheroFormPage';

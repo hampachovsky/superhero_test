@@ -1,1 +1,1 @@
-export { validateFiles } from './validateFiles'
+export { validateFiles } from './validateFiles';

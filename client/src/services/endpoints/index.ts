@@ -1,1 +1,1 @@
-export { superheroAPI } from './superheroAPI'
+export { superheroAPI } from './superheroAPI';

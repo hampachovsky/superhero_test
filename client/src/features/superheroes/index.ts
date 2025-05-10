@@ -1,1 +1,1 @@
-export { SuperheroCard } from './components'
+export { SuperheroCard } from './components';
