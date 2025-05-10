@@ -11,8 +11,8 @@ app.use('/uploads', express.static('src/uploads'));
 app.use('/api', superheroRouter);
 
 mongoose
-    .connect(MONGO_URI)
-    .then(() => {
-        app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-    })
-    .catch((err) => console.error('DB connection error:', err));
+  .connect(MONGO_URI)
+  .then(() => {
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  })
+  .catch((err) => console.error('DB connection error:', err));

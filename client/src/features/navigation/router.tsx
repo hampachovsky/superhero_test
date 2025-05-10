@@ -7,22 +7,22 @@ import { SuperheroPage } from '@/pages/SuperheroPage';
 import { createBrowserRouter } from 'react-router';
 
 export const router = createBrowserRouter([
-    {
-        element: <AppLayout />,
-        children: [
-            {
-                path: paths.superheroes.path,
-                element: <SuperheroesPage />,
-            },
-            {
-                path: paths.superhero.path,
-                element: <SuperheroPage />,
-            },
-            {
-                path: paths.superheroForm.path,
-                element: <SuperheroFormPage />,
-            },
-        ],
-    },
-    { element: <NotFoundPage />, path: '*' },
+  {
+    element: <AppLayout />,
+    children: [
+      {
+        path: paths.superheroes.path,
+        element: <SuperheroesPage />,
+      },
+      {
+        path: paths.superhero.path,
+        element: <SuperheroPage />,
+      },
+      {
+        path: paths.superheroForm.path,
+        element: <SuperheroFormPage />,
+      },
+    ],
+  },
+  { element: <NotFoundPage />, path: '*' },
 ]);

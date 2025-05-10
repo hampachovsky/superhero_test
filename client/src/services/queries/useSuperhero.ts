@@ -2,11 +2,11 @@ import { superheroAPI } from '@/services';
 import { useQuery } from '@tanstack/react-query';
 
 export const useSuperhero = (id: string | undefined | null) => {
-    const { data: superhero, isPending } = useQuery({
-        queryKey: ['superheroes', id],
-        queryFn: () => superheroAPI.getById(id!),
-        enabled: !!id,
-    });
+  const { data: superhero, isPending } = useQuery({
+    queryKey: ['superheroes', id],
+    queryFn: () => superheroAPI.getById(id!),
+    enabled: !!id,
+  });
 
-    return { superhero, isPending };
+  return { superhero, isPending };
 };
