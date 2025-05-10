@@ -8,8 +8,8 @@ export const paths = {
 		getHref: (id: string) => `/superhero/${id}`,
 	},
 	superheroForm: {
-		path: '/superhero/form',
-		getHref: () => `/superhero/form`,
+		path: '/form/superhero',
+		getHref: () => `/form/superhero`,
 	},
 	notFound: {
 		path: '/notFound',

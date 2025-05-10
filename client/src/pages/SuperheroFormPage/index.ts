@@ -1,0 +1,1 @@
+export { SuperheroFormPage } from './SuperheroFormPage'

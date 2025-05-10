@@ -1,12 +1,13 @@
+import type { Superhero, SuperheroesResponse } from '@/types'
 import { instance } from './instance'
 
 export const superheroAPI = {
-	async getAll(): Promise<unknown> {
-		const response = await instance.get('')
+	async getAll(page: number = 1): Promise<SuperheroesResponse> {
+		const response = await instance.get(`/superheroes?page=${page}`)
 		return response.data
 	},
-	async getById(): Promise<unknown> {
-		const response = await instance.get(``)
+	async getById(id: string): Promise<Superhero> {
+		const response = await instance.get(`/superheroes/${id}`)
 		return response.data
 	},
 }

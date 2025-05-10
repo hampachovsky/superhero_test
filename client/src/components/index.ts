@@ -1,2 +1,2 @@
 export { AppLayout } from './layouts'
-export { Header } from './ui'
+export { Header, Spinner } from './ui'
