@@ -1,0 +1,1 @@
+export { SuperheroesPage } from './SuperheroesPage'

@@ -1,0 +1,1 @@
+export { superheroAPI } from './superheroAPI'
