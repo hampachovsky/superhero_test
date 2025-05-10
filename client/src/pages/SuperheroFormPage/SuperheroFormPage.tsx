@@ -1,16 +1,28 @@
 import { paths } from '@/config'
-import { createSuperheroSchema, useCreateSuperhero } from '@/services'
+import { createSuperheroSchema, useCreateSuperhero, useSuperhero, useUpdateSuperhero } from '@/services'
 import type { SuperheroForm } from '@/types'
 import { validateFiles } from '@/utils'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Box, Button, TextField, Typography } from '@mui/material'
-import React, { useEffect } from 'react'
+import CloseIcon from '@mui/icons-material/Close'
+import { Box, Button, IconButton, List, ListItem, ListItemAvatar, TextField, Typography } from '@mui/material'
+import React, { useEffect, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { Controller, type SubmitHandler, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
-import { useNavigate } from 'react-router'
+import { useNavigate, useSearchParams } from 'react-router'
 
 export const SuperheroFormPage: React.FC = () => {
+	const [searchParams, setSearchParams] = useSearchParams()
+
+	const { superhero, isPending: fetchSuperheroPending } = useSuperhero(searchParams.get('editId'))
+	const [existingImages, setExistingImages] = useState<string[] | undefined>()
+
+	const navigate = useNavigate()
+	const { create, isPending, isSuccess } = useCreateSuperhero()
+	const { update, isPending: isUpdatePending, isSuccess: isUpdateSuccess } = useUpdateSuperhero()
+
+	const { getRootProps, getInputProps, isDragActive, acceptedFiles } = useDropzone()
+
 	const {
 		control,
 		reset,
@@ -21,18 +33,50 @@ export const SuperheroFormPage: React.FC = () => {
 		mode: 'onBlur',
 		reValidateMode: 'onSubmit',
 		defaultValues: {
-			nickname: 'Superman',
-			real_name: 'rwqtwqtwq',
-			origin_description: 'rtwqtwqteqtrewdtqwetewqtewq',
-			catch_phrase: 'tqewtqwetwq',
-			superpowers: 'q, w, r',
+			nickname: '',
+			real_name: '',
+			origin_description: '',
+			catch_phrase: '',
+			superpowers: '',
 		},
 	})
 
-	const navigate = useNavigate()
-	const { create, isPending, isSuccess } = useCreateSuperhero()
+	useEffect(() => {
+		if (!searchParams.get('editId')) {
+			reset({
+				nickname: '',
+				real_name: '',
+				origin_description: '',
+				catch_phrase: '',
+				superpowers: '',
+			})
+			setExistingImages([])
+			navigate(paths.superheroForm.path)
+		} else if (superhero) {
+			reset({
+				nickname: superhero.nickname || '',
+				real_name: superhero.real_name || '',
+				origin_description: superhero.origin_description || '',
+				catch_phrase: superhero.catch_phrase || '',
+				superpowers: Array.isArray(superhero.superpowers)
+					? superhero.superpowers.join(', ')
+					: superhero.superpowers || '',
+			})
+			setExistingImages(superhero.Images)
+		}
+	}, [superhero, reset, searchParams, navigate])
 
-	const { getRootProps, getInputProps, isDragActive, acceptedFiles } = useDropzone()
+	useEffect(() => {
+		if (isSuccess || isUpdateSuccess) {
+			reset()
+			navigate(paths.superheroes.path)
+		}
+	}, [isSuccess, reset, navigate, isUpdateSuccess])
+
+	const handleRemoveExistingImage = (image: string) => {
+		const filtredArr = existingImages?.filter((item) => item !== image)
+		setExistingImages(filtredArr)
+	}
 
 	const onSubmit: SubmitHandler<SuperheroForm> = async (data) => {
 		if (!validateFiles(acceptedFiles)) {
@@ -53,16 +97,18 @@ export const SuperheroFormPage: React.FC = () => {
 				formData.append('Images', file)
 			})
 		}
-
-		create(formData)
+		if (!superhero) {
+			create(formData)
+		} else {
+			if (existingImages) {
+				const formatedArr = existingImages.join(',')
+				formData.append('existingImages', formatedArr)
+			}
+			console.log(formData)
+			update({ superhero: formData, id: superhero._id })
+		}
 	}
 
-	useEffect(() => {
-		if (isSuccess) {
-			reset()
-			navigate(paths.superheroes.path)
-		}
-	}, [isSuccess, reset, navigate])
 	return (
 		<Box
 			sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 5 }}
@@ -97,7 +143,6 @@ export const SuperheroFormPage: React.FC = () => {
 					/>
 				)}
 			/>
-
 			<Controller
 				name='origin_description'
 				control={control}
@@ -114,7 +159,6 @@ export const SuperheroFormPage: React.FC = () => {
 					/>
 				)}
 			/>
-
 			<Controller
 				name='catch_phrase'
 				control={control}
@@ -129,7 +173,6 @@ export const SuperheroFormPage: React.FC = () => {
 					/>
 				)}
 			/>
-
 			<Controller
 				name='superpowers'
 				control={control}
@@ -156,8 +199,49 @@ export const SuperheroFormPage: React.FC = () => {
 					<Typography variant='h5'>Drag 'n' drop some files here, or click to select files</Typography>
 				)}
 			</Box>
-
-			<Button loading={isPending} type='submit' variant='contained' color='primary' disabled={!isValid} sx={{ mt: 2 }}>
+			{existingImages && superhero && existingImages.length > 0 ? (
+				<List
+					dense
+					subheader={
+						<Typography variant='h5' textAlign={'center'}>
+							Images to remove
+						</Typography>
+					}
+					sx={{ border: '2px dashed', borderRadius: 2, p: 2 }}
+				>
+					{existingImages.map((image, index) => (
+						<ListItem
+							key={index}
+							secondaryAction={
+								<IconButton onClick={() => handleRemoveExistingImage(image)} edge='end' aria-label='delete'>
+									<CloseIcon />
+								</IconButton>
+							}
+						>
+							<ListItemAvatar>
+								<Box
+									component='img'
+									src={`${import.meta.env.VITE_STATIC_URL}${image}`}
+									alt={`${superhero.nickname} image ${index + 1}`}
+									sx={{
+										width: '200px',
+										height: '200px',
+										objectFit: 'cover',
+									}}
+								/>
+							</ListItemAvatar>
+						</ListItem>
+					))}
+				</List>
+			) : null}
+			<Button
+				loading={isPending || isUpdatePending}
+				type='submit'
+				variant='contained'
+				color='primary'
+				disabled={!isValid}
+				sx={{ mt: 2 }}
+			>
 				Submit
 			</Button>
 		</Box>

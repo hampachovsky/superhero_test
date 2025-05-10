@@ -1,2 +1,2 @@
 export { AppLayout } from './layouts'
-export { Header, Spinner } from './ui'
+export { DeleteButton, EditButton, Header, Spinner } from './ui'

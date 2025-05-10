@@ -94,21 +94,23 @@ const superheroController = {
 
             const { nickname, real_name, origin_description, superpowers, catch_phrase } = req.body;
 
-            const existingImages = req.body.existingImages
-                ? Array.isArray(req.body.existingImages)
-                    ? req.body.existingImages
-                    : [req.body.existingImages]
-                : [];
-
             if (nickname) hero.nickname = nickname;
             if (real_name) hero.real_name = real_name;
             if (origin_description) hero.origin_description = origin_description;
             if (superpowers) {
                 if (typeof superpowers === 'string') {
-                    hero.superpowers = superpowers.split(',').map((power: string) => power.trim());
+                    hero.superpowers = superpowers.split(',');
                 } else {
                     hero.superpowers = superpowers;
                 }
+            }
+
+            let existingImages = [];
+
+            if (typeof req.body.existingImages === 'string') {
+                existingImages = req.body.existingImages.split(',').filter(Boolean);
+            } else if (Array.isArray(req.body.existingImages)) {
+                existingImages = req.body.existingImages.filter(Boolean);
             }
             const oldImagesToDelete = hero.Images.filter((img) => !existingImages.includes(img));
             clearFiles(oldImagesToDelete);

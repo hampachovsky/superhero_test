@@ -1,9 +1,8 @@
+import { DeleteButton, EditButton } from '@/components'
 import { paths } from '@/config'
 import { useDeleteSuperhero } from '@/services'
 import type { SuperheroInList } from '@/types'
-import DeleteIcon from '@mui/icons-material/Delete'
-import EditIcon from '@mui/icons-material/Edit'
-import { Box, Card, CardActions, CardContent, IconButton, Typography } from '@mui/material'
+import { Box, Card, CardActions, CardContent, Typography } from '@mui/material'
 import React from 'react'
 import { Link } from 'react-router'
 
@@ -49,12 +48,8 @@ export const SuperheroCard: React.FC<SuperheroCardProps> = ({ superhero }) => {
 				)}
 			</CardContent>
 			<CardActions sx={{ display: 'flex', justifyContent: 'right' }}>
-				<IconButton size='small'>
-					<EditIcon />
-				</IconButton>
-				<IconButton loading={isPending} size='small' onClick={() => deleteSuperhero(superhero._id)}>
-					<DeleteIcon />
-				</IconButton>
+				<EditButton id={superhero._id} />
+				<DeleteButton id={superhero._id} isLoading={isPending} deleteSuperhero={deleteSuperhero} />
 			</CardActions>
 		</Card>
 	)

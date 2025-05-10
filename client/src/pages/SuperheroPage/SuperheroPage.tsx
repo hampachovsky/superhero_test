@@ -1,9 +1,7 @@
-import { Spinner } from '@/components'
+import { DeleteButton, EditButton, Spinner } from '@/components'
 import { paths } from '@/config'
 import { useDeleteSuperhero, useSuperhero } from '@/services'
-import DeleteIcon from '@mui/icons-material/Delete'
-import EditIcon from '@mui/icons-material/Edit'
-import { Box, Chip, Divider, Grid, IconButton, Paper, Typography } from '@mui/material'
+import { Box, Chip, Divider, Grid, Paper, Typography } from '@mui/material'
 import React, { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router'
 
@@ -150,7 +148,6 @@ export const SuperheroPage: React.FC = () => {
 					</Box>
 				</Box>
 
-				{/* Grouped and resized images */}
 				<Box sx={{ mt: 2 }}>
 					<Typography
 						variant='h5'
@@ -222,12 +219,8 @@ export const SuperheroPage: React.FC = () => {
 					</Box>
 
 					<Box sx={{ width: '70%', display: 'flex', justifyContent: 'right' }}>
-						<IconButton size='small'>
-							<EditIcon />
-						</IconButton>
-						<IconButton loading={isDeletePending} size='small' onClick={() => deleteSuperhero(superhero._id)}>
-							<DeleteIcon />
-						</IconButton>
+						<EditButton id={superhero._id} />
+						<DeleteButton id={superhero._id} isLoading={isDeletePending} deleteSuperhero={deleteSuperhero} />
 					</Box>
 				</Box>
 			</Box>
