@@ -48,4 +48,4 @@ Further improvements to the project could include:
 
 1. **Switching from Multer to a cloud storage solution** – Using Cloudinary or another cloud provider would be a better long-term approach for storing images efficiently. It would provide built-in optimization, scalability, and remove the need for local file management.
 2. **Writing tests for core functionality** – Implementing unit and integration tests for key features.
-3. **Optimizing frontend performance** – Implementing lazy loading, memoizing expensive calculations..
+3. **Optimizing frontend performance** – Implementing lazy loading, memoizing expensive calculations.
