@@ -1,3 +1,5 @@
+import type { FileWithPath } from 'react-dropzone'
+
 export interface Superhero {
 	_id: string
 	nickname: string
@@ -9,6 +11,14 @@ export interface Superhero {
 }
 
 export type SuperheroInList = Pick<Superhero, '_id' | 'nickname' | 'Images'>
+
+export type SuperheroForm = Omit<Superhero, '_id' | 'Images' | 'superpowers'> & {
+	superpowers: string
+}
+
+export type SuperheroFormData = Omit<Superhero, '_id' | 'Images'> & {
+	Images: readonly FileWithPath[]
+}
 
 export interface SuperheroesResponse {
 	data: SuperheroInList[]

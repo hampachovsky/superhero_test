@@ -1,2 +1,3 @@
 export { superheroAPI } from './endpoints'
-export { useAllSuperheroes, useSuperhero } from './queries'
+export { useAllSuperheroes, useCreateSuperhero, useDeleteSuperhero, useSuperhero } from './queries'
+export { createSuperheroSchema } from './schemas'

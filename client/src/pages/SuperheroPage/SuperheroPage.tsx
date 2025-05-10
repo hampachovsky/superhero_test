@@ -1,13 +1,30 @@
 import { Spinner } from '@/components'
-import { useSuperhero } from '@/services'
-import { Box, Chip, Divider, Grid, Paper, Typography } from '@mui/material'
-import React from 'react'
-import { useParams } from 'react-router'
+import { paths } from '@/config'
+import { useDeleteSuperhero, useSuperhero } from '@/services'
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
+import { Box, Chip, Divider, Grid, IconButton, Paper, Typography } from '@mui/material'
+import React, { useEffect } from 'react'
+import { useNavigate, useParams } from 'react-router'
 
 export const SuperheroPage: React.FC = () => {
 	const { id } = useParams()
+	const navigate = useNavigate()
 
 	const { superhero, isPending } = useSuperhero(id)
+
+	const {
+		deleteSuperhero,
+		isPending: isDeletePending,
+		isSuccess: isDeletingSuccess,
+	} = useDeleteSuperhero(superhero?._id)
+
+	useEffect(() => {
+		if (isDeletingSuccess) {
+			navigate(paths.superheroes.path)
+		}
+	}, [isDeletingSuccess, navigate])
+
 	if (isPending) {
 		return <Spinner />
 	}
@@ -19,6 +36,7 @@ export const SuperheroPage: React.FC = () => {
 			</Typography>
 		)
 	}
+
 	const { nickname, real_name, origin_description, catch_phrase, superpowers, Images } = superhero
 	return (
 		<Paper elevation={3} sx={{ p: { xs: 2, md: 4 }, borderRadius: 2, overflow: 'hidden' }}>
@@ -195,11 +213,22 @@ export const SuperheroPage: React.FC = () => {
 					)}
 				</Box>
 
-				<Box sx={{ mt: 2 }}>
+				<Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
 					<Divider sx={{ mb: 2 }} />
-					<Typography variant='body2' color='text.secondary'>
-						ID: {superhero._id}
-					</Typography>
+					<Box sx={{ width: '30%', display: 'flex', alignItems: 'center' }}>
+						<Typography variant='body2' color='text.secondary'>
+							ID: {superhero._id}
+						</Typography>
+					</Box>
+
+					<Box sx={{ width: '70%', display: 'flex', justifyContent: 'right' }}>
+						<IconButton size='small'>
+							<EditIcon />
+						</IconButton>
+						<IconButton loading={isDeletePending} size='small' onClick={() => deleteSuperhero(superhero._id)}>
+							<DeleteIcon />
+						</IconButton>
+					</Box>
 				</Box>
 			</Box>
 		</Paper>

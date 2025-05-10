@@ -1,4 +1,5 @@
 import { paths } from '@/config'
+import { useDeleteSuperhero } from '@/services'
 import type { SuperheroInList } from '@/types'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
@@ -11,6 +12,7 @@ interface SuperheroCardProps {
 }
 
 export const SuperheroCard: React.FC<SuperheroCardProps> = ({ superhero }) => {
+	const { deleteSuperhero, isPending } = useDeleteSuperhero(superhero._id)
 	return (
 		<Card sx={{ width: 275 }}>
 			<CardContent>
@@ -50,7 +52,7 @@ export const SuperheroCard: React.FC<SuperheroCardProps> = ({ superhero }) => {
 				<IconButton size='small'>
 					<EditIcon />
 				</IconButton>
-				<IconButton size='small'>
+				<IconButton loading={isPending} size='small' onClick={() => deleteSuperhero(superhero._id)}>
 					<DeleteIcon />
 				</IconButton>
 			</CardActions>

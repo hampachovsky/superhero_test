@@ -10,4 +10,17 @@ export const superheroAPI = {
 		const response = await instance.get(`/superheroes/${id}`)
 		return response.data
 	},
+	async create(superhero: FormData): Promise<Superhero> {
+		console.log(superhero)
+		const response = await instance.post('/superheroes', superhero, {
+			headers: {
+				'Content-Type': 'multipart/form-data',
+			},
+		})
+		return response.data
+	},
+	async delete(id: string): Promise<Superhero> {
+		const response = await instance.delete(`/superheroes/${id}`)
+		return response.data
+	},
 }
